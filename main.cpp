@@ -40,24 +40,26 @@ unsigned long long findFibonacci(unsigned long long n)
  }
 
 int main(int argc, char* argv[], char *envp []){
-    // if (argc != 2)
-    // {
-    //     std::cout<<"Неверное количество аргументов!" << std::endl;
-    // }
-    // if (!is_number(argv[1]) || std::stoi(argv[1]) < 0)
-    //     {
-    //         std::cout<< "Второй аргумент должен быть неотрицательным числом!";
-    //         return 0;
-    //     }
-    // int number = std::stoi(argv[1]);
-    int number;
-    std::cin>> number;
+    if (argc != 2)
+    {
+        std::cout<<"Неверное количество аргументов!" << std::endl;
+        return 0;
+    }
+    if (!is_number(argv[1]) || std::stoi(argv[1]) < 0)
+        {
+            std::cout<< "Второй аргумент должен быть неотрицательным числом!";
+            return 0;
+        }
+    //переводим аргумент из командной строки в число
+    int number = std::stoi(argv[1]);
     pid_t pid, ppid,chpid;
     chpid = fork();
+    //если произошла беда
     if (chpid == -1)
     {
         std::cout<< "Что-то случилось"<< std::endl;
     }
+    //это ребёнок
     else if (chpid == 0)
     {
         pid_t chpid2 = fork();
@@ -65,6 +67,7 @@ int main(int argc, char* argv[], char *envp []){
         {
             std::cout<< "Что-то случилось"<< std::endl;
         }
+        //ребёнок ребёнка
         else if (chpid2 == 0)
         {
             std::cout<< "My pid = " <<getpid() << "; my ppid = " << getppid() << std::endl;
@@ -72,17 +75,21 @@ int main(int argc, char* argv[], char *envp []){
             execl("/bin/ls", "/bin/ls", 0);
             std::cout<<getpid()<<" Завершил работу" << std::endl;
             std::cout<<'\n';
+            //ждём завершения ребёнка
             wait(0);
         }
+        //ребёнок
         else{
             std::cout<< "My pid = " <<getpid() << "; my ppid = " << getppid() << std::endl;
             std::cout<< "Факториал числа: "<< findFactorial(number) << std::endl;
             std::cout<<getpid()<<" Завершил работу" << std::endl;
             std::cout<<'\n';
+            //ждём завершение родителя
             wait(0);
         }
         
     }
+    //родитель
     else{
         std::cout<< "My pid = " <<getpid() << "; my ppid = " << getppid() << std::endl;
         std::cout<< "Число Фиббоначи: "<< findFibonacci(number) << std::endl;
